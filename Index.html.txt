@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Utility Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href='data:application/json;charset=utf-8,{"name":"All-in-One Utility Pro","short_name":"UtilityPro","start_url":"./?m=1","display":"standalone","background_color":"%230f172a","theme_color":"%2563eb","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3342/3342137.png","sizes":"512x512","type":"image/png"}]}'>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col">
+
+    <header class="bg-slate-800 p-4 shadow-lg sticky top-0 z-50">
+        <h1 class="text-xl font-bold text-center text-blue-400">All-in-One Utility Pro</h1>
+        <nav class="flex justify-center flex-wrap gap-2 mt-3">
+            <button onclick="switchTab('docs')" class="px-3 py-1 bg-blue-600 rounded text-sm font-medium">Docs & ID Tools</button>
+            <button onclick="switchTab('ai')" class="px-3 py-1 bg-slate-700 rounded text-sm font-medium">Gemini AI</button>
+            <button onclick="switchTab('services')" class="px-3 py-1 bg-slate-700 rounded text-sm font-medium">Italian Services</button>
+            <button onclick="switchTab('games')" class="px-3 py-1 bg-slate-700 rounded text-sm font-medium">Games</button>
+        </nav>
+    </header>
+
+    <main class="flex-1 p-4 max-w-4xl w-full mx-auto">
+        
+        <section id="docs" class="tab-content active space-y-6">
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">ডকুমেন্ট ক্রপ ও রিসাইজ (Document Tools)</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">যেকোনো ছবি বা ডকুমেন্ট সিলেক্ট করুন:</label>
+                        <input type="file" id="imageInput" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="processImage('passport')" class="flex-1 bg-slate-700 hover:bg-slate-600 p-2 rounded text-sm">পাসপোর্ট সাইজ</button>
+                        <button onclick="processImage('nid')" class="flex-1 bg-slate-700 hover:bg-slate-600 p-2 rounded text-sm">আইডি কার্ড সাইজ</button>
+                        <button onclick="processImage('compress')" class="flex-1 bg-slate-700 hover:bg-slate-600 p-2 rounded text-sm">কম্প্রেস (KB কমানো)</button>
+                    </div>
+                    <div id="imagePreviewContainer" class="mt-4 text-center hidden">
+                        <img id="sourceImage" class="max-h-60 mx-auto mb-2 border border-slate-600 rounded hidden">
+                        <canvas id="imageCanvas" class="max-w-full mx-auto border border-dashed border-slate-500 rounded"></canvas>
+                        <div class="mt-3">
+                            <a id="downloadLink" download="Processed_Document.png" class="inline-block bg-green-600 hover:bg-green-700 px-6 py-2 rounded font-bold text-sm">প্রসেস করা ছবি ডাউনলোড</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">ডিজিটাল সিগনেচার প্যাড (Signature Pad)</h2>
+                <canvas id="sigCanvas" class="w-full h-40 bg-white rounded border border-slate-600 mb-3"></canvas>
+                <div class="flex gap-2">
+                    <button onclick="clearSignature()" class="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded text-sm font-medium">মুছে ফেলুন</button>
+                    <button onclick="saveSignature()" class="flex-1 bg-green-600 hover:bg-green-700 p-2 rounded text-sm font-medium">স্বাক্ষর সেভ করুন</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai" class="tab-content space-y-4">
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 flex flex-col h-[500px]">
+                <h2 class="text-lg font-semibold mb-2 border-b border-slate-700 pb-2">Gemini AI Assistant</h2>
+                
+                <div id="aiChatWindow" class="flex-1 overflow-y-auto mb-4 space-y-3 p-2 bg-slate-900 rounded border border-slate-700">
+                    <div class="text-slate-400 text-sm text-center">আপনার জিজ্ঞাসা লিখুন অথবা ভয়েস বাটন চেপে বলুন।</div>
+                </div>
+
+                <div class="relative mb-2">
+                    <input type="text" id="apiKeyInput" placeholder="আপনার Gemini API Key এখানে দিন..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="aiInput" placeholder="কিছু লিখুন..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm focus:outline-none focus:border-blue-500">
+                    <button onclick="startListening()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg" title="Voice Input">🎤</button>
+                    <button onclick="sendToGemini()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-bold">পাঠান</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="tab-content space-y-4">
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">Italian Public Services</h2>
+                <p class="text-sm text-slate-400 mb-4">সরকারি পোর্টালগুলোতে সহজে প্রবেশের জন্য নিচের বাটনগুলোতে ক্লিক করুন:</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="https://www.cieicocard.interno.gov.it/" target="_blank" class="bg-blue-700 hover:bg-blue-800 p-4 rounded-lg text-center font-bold shadow transition">CIE ID Portal</a>
+                    <a href="https://www.io.italia.it/" target="_blank" class="bg-cyan-700 hover:bg-cyan-800 p-4 rounded-lg text-center font-bold shadow transition">IO App Portal</a>
+                    <a href="https://www.spid.gov.it/" target="_blank" class="bg-indigo-700 hover:bg-indigo-800 p-4 rounded-lg text-center font-bold shadow transition">SPID Identity</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="games" class="tab-content space-y-4">
+            <div class="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700 text-center">
+                <h2 class="text-lg font-semibold mb-4 border-b border-slate-700 pb-2">মিনি গেমস (Mini Games)</h2>
+                <p class="text-sm text-slate-400 mb-6">কাজের ফাঁকে রিফ্রেশমেন্টের জন্য ছোট একটি গেম খেলুন:</p>
+                
+                <div class="max-w-xs mx-auto bg-slate-900 p-6 rounded-xl border border-slate-700">
+                    <h3 class="font-bold text-yellow-500 mb-4">সংখ্যা অনুমান গেম (Number Guess)</h3>
+                    <p id="gameMessage" class="text-sm mb-4 text-slate-300">১ থেকে ১০ এর মধ্যে একটি সংখ্যা অনুমান করুন。</p>
+                    <input type="number" id="guessInput" min="1" max="10" placeholder="আপনার অনুমান" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-center mb-4 text-white">
+                    <button onclick="checkGuess()" class="w-full bg-yellow-600 hover:bg-yellow-700 py-2 rounded font-bold text-sm">চেক করুন</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        const imageInput = document.getElementById('imageInput');
+        const sourceImage = document.getElementById('sourceImage');
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const downloadLink = document.getElementById('downloadLink');
+
+        imageInput.addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                sourceImage.onload = function() {
+                    canvas.width = sourceImage.width;
+                    canvas.height = sourceImage.height;
+                    ctx.drawImage(sourceImage, 0, 0);
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                }
+                sourceImage.src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        function processImage(type) {
+            if (!sourceImage.src) return;
+            if (type === 'passport') {
+                canvas.width = 300;
+                canvas.height = 300;
+                ctx.drawImage(sourceImage, 50, 50, sourceImage.width - 100, sourceImage.height - 100, 0, 0, 300, 300);
+            } else if (type === 'nid') {
+                canvas.width = 400;
+                canvas.height = 250;
+                ctx.drawImage(sourceImage, 0, 0, sourceImage.width, sourceImage.height, 0, 0, 400, 250);
+            } else if (type === 'compress') {
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+                downloadLink.href = dataUrl;
+                downloadLink.click();
+                return;
+            }
+            downloadLink.href = canvas.toDataURL('image/png');
+        }
+
+        const sigCanvas = document.getElementById('sigCanvas');
+        const sigCtx = sigCanvas.getContext('2d');
+        let drawing = false;
+
+        sigCanvas.addEventListener('mousedown', startDrawing);
+        sigCanvas.addEventListener('mousemove', draw);
+        sigCanvas.addEventListener('mouseup', stopDrawing);
+        sigCanvas.addEventListener('touchstart', startDrawing);
+        sigCanvas.addEventListener('touchmove', draw);
+        sigCanvas.addEventListener('touchend', stopDrawing);
+
+        function startDrawing(e) { drawing = true; draw(e); }
+        function stopDrawing() { drawing = false; sigCtx.beginPath(); }
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const rect = sigCanvas.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            sigCtx.lineWidth = 2;
+            sigCtx.lineCap = 'round';
+            sigCtx.strokeStyle = '#000';
+            sigCtx.lineTo(clientX - rect.left, clientY - rect.top);
+            sigCtx.stroke();
+            sigCtx.beginPath();
+            sigCtx.moveTo(clientX - rect.left, clientY - rect.top);
+        }
+
+        function clearSignature() {
+            sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        }
+
+        function saveSignature() {
+            const dataUrl = sigCanvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'Signature.png';
+            a.click();
+        }
+
+        let recognition;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'bn-BD';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                document.getElementById('aiInput').value = event.results[0][0].transcript;
+                sendToGemini();
+            };
+        }
+
+        function startListening() {
+            if (recognition) {
+                recognition.start();
+            } else {
+                alert('আপনার ব্রাউজার স্পিচ রিকগনিশন সাপোর্ট করে না।');
+            }
+        }
+
+        async function sendToGemini() {
+            const input = document.getElementById('aiInput');
+            const apiKey = document.getElementById('apiKeyInput').value;
+            const chatWindow = document.getElementById('aiChatWindow');
+            if (!input.value.trim()) return;
+
+            const userText = input.value;
+            chatWindow.innerHTML += `<div class="bg-blue-900 p-2 rounded self-end text-sm">আপনি: ${userText}</div>`;
+            input.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            if (!apiKey) {
+                chatWindow.innerHTML += `<div class="bg-red-900 p-2 rounded self-start text-sm">সিস্টেম: অনুগ্রহ করে আপনার Gemini API Key প্রদান করুন।</div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }] })
+                });
+                const data = await response.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                chatWindow.innerHTML += `<div class="bg-slate-700 p-2 rounded self-start text-sm">Gemini: ${reply}</div>`;
+            } catch (error) {
+                chatWindow.innerHTML += `<div class="bg-red-900 p-2 rounded self-start text-sm">এরর: কানেকশন সমস্যা হয়েছে বা API Key ভুল।</div>`;
+            }
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        const targetNumber = Math.floor(Math.random() * 10) + 1;
+        function checkGuess() {
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const message = document.getElementById('gameMessage');
+            if (guess === targetNumber) {
+                message.innerHTML = "অভিনন্দন! আপনি সঠিক সংখ্যাটি মিলিয়েছেন!";
+                message.className = "text-sm mb-4 text-green-400 font-bold";
+            } else {
+                message.innerHTML = `ভুল হয়েছে! সঠিক সংখ্যাটি ছিল ${targetNumber}। আবার চেষ্টা করুন।`;
+                message.className = "text-sm mb-4 text-red-400";
+            }
+        }
+    </script>
+</body>
+</html>
