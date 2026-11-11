@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passport Scan to PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        .upload-section { margin-bottom: 20px; border: 2px dashed #ccc; padding: 20px; display: inline-block; width: 80%; }
+        img { max-width: 100%; height: auto; margin-top: 10px; display: none; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 16px; margin: 5px; }
+        #pdf-content { padding: 20px; background: #fff; display: inline-block; width: 100%; box-sizing: border-box; }
+        .page { width: 210mm; min-height: 297mm; margin: 10mm auto; background: white; padding: 20mm; box-shadow: 0 0 10px rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h2>Passport Scan to PDF</h2>
+
+    <div class="upload-section">
+        <h3>Upload Passport Top Part</h3>
+        <input type="file" id="topInput" accept="image/*" onchange="previewImage(this, 'topImage')">
+        <br>
+        <img id="topImage" alt="Top Preview">
+    </div>
+
+    <div class="upload-section">
+        <h3>Upload Passport Down Part</h3>
+        <input type="file" id="downInput" accept="image/*" onchange="previewImage(this, 'downImage')">
+        <br>
+        <img id="downImage" alt="Down Preview">
+    </div>
+
+    <br>
+    <button class="btn" onclick="generatePDF()">Save as A4 PDF</button>
+
+    <div style="display:none;">
+        <div id="pdf-content" class="page">
+            <h3>Passport Scan Copy</h3>
+            <div>
+                <h4>Top Part</h4>
+                <img id="pdfTop" style="display:block; margin: 0 auto; max-width: 100%;">
+            </div>
+            <div style="margin-top: 40px;">
+                <h4>Down Part</h4>
+                <img id="pdfDown" style="display:block; margin: 0 auto; max-width: 100%;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input, imgId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(imgId).src = e.target.result;
+                    document.getElementById(imgId).style.display = 'block';
+                    document.getElementById('pdf' + imgId.charAt(0).toUpperCase() + imgId.slice(1)).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function generatePDF() {
+            const top = document.getElementById('topImage').src;
+            const down = document.getElementById('downImage').src;
+            
+            if(top.startsWith('data:') && down.startsWith('data:')) {
+                const element = document.getElementById('pdf-content');
+                element.style.display = 'block';
+                const opt = {
+                    margin:       0,
+                    filename:     'Passport-Scan.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save().then(function() {
+                    element.style.display = 'none';
+                });
+            } else {
+                alert('Please upload both top and down images first.');
+            }
+        }
+    </script>
+</body>
+</html>
